@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KAPWA — Community Service &amp; Skill Exchange (Metro Manila, Philippines)</title>
+  <meta name="description" content="KAPWA is a community-based service and skill exchange platform serving Metro Manila, Philippines. Find local help, offer services, and connect with neighbors." />
+  <meta name="keywords" content="KAPWA, Metro Manila, Philippines, community services, skill exchange, local help, volunteer, Metro Manila directory" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-logo" id="nav-logo-link">
+        <div class="logo-icon">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="20" r="20" fill="url(#logoGrad)"/>
+            <path d="M12 20C12 20 14 14 20 14C26 14 28 20 28 20C28 20 26 26 20 26C14 26 12 20 12 20Z" fill="white" opacity="0.9"/>
+            <circle cx="20" cy="20" r="4" fill="url(#logoGrad2)"/>
+            <defs>
+              <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+                <stop offset="0%" stop-color="#1B4FD8"/>
+                <stop offset="100%" stop-color="#0B3BA8"/>
+              </linearGradient>
+              <linearGradient id="logoGrad2" x1="0" y1="0" x2="20" y2="20">
+                <stop offset="0%" stop-color="#F5C842"/>
+                <stop offset="100%" stop-color="#E8A91E"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="logo-text">KAPWA</span>
+      </a>
+
+      <div class="nav-links" id="nav-links">
+        <a href="#explore" class="nav-link nav-browse-btn" id="nav-browse" onclick="openBrowseModal(); return false;"><span class="browse-icon">&#128269;</span> Browse</a>
+        <a href="#how-it-works" class="nav-link" id="nav-how">How It Works</a>
+        <a href="#community" class="nav-link" id="nav-community">Community</a>
+        <a href="#opportunities" class="nav-link" id="nav-opportunities">Opportunities</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn-ghost" id="btn-signin" onclick="openAuthModal('signin')">Sign In</button>
+        <button class="btn-primary" id="btn-join" onclick="openAuthModal('signup')">Join KAPWA</button>
+        <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-shapes">
+      <div class="hero-shape shape-1"></div>
+      <div class="hero-shape shape-2"></div>
+      <div class="hero-shape shape-3"></div>
+      <div class="hero-orb orb-1"></div>
+      <div class="hero-orb orb-2"></div>
+    </div>
+
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          <span>Metro Manila, Philippines &bull; Community Exchange</span>
+        </div>
+
+        <h1 class="hero-title">
+          <span class="title-line">Everyone can</span>
+          <span class="title-line accent-gradient">need something,</span>
+          <span class="title-line">everyone can</span>
+          <span class="title-line accent-gradient-alt">offer something.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          KAPWA connects neighbors across Metro Manila through local services, skills, and mutual help. Real support from verified locals in your city.
+        </p>
+
+        <div class="hero-cta-group">
+          <button class="cta-need" id="cta-i-need" onclick="openPostModal('need')">
+            <div class="cta-icon">&#128075;</div>
+            <div class="cta-text">
+              <span class="cta-label">I NEED</span>
+              <span class="cta-sub">Post what you're looking for</span>
+            </div>
+          </button>
+          <button class="cta-help" id="cta-i-help" onclick="openPostModal('offer')">
+            <div class="cta-icon">&#129309;</div>
+            <div class="cta-text">
+              <span class="cta-label">I CAN HELP</span>
+              <span class="cta-sub">Offer your skills or services</span>
+            </div>
+          </button>
+          <button class="cta-browse" id="cta-browse-listings" onclick="openBrowseModal()">
+            <div class="cta-icon">&#128269;</div>
+            <div class="cta-text">
+              <span class="cta-label">BROWSE LISTINGS</span>
+              <span class="cta-sub">Open row tab directory</span>
+            </div>
+          </button>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">12,400+</span>
+            <span class="stat-desc">Community Members</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">3,800+</span>
+            <span class="stat-desc">Services Offered</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">98%</span>
+            <span class="stat-desc">Satisfaction Rate</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="mascot-container" id="mascot-hero">
+          <img src="assets/mascot.jpg" alt="Kap - KAPWA community mascot" class="mascot-img" id="mascot-img" />
+          <div class="mascot-bubble" id="mascot-bubble">
+            <p>Hello! I'm <strong>Kap</strong> &#128075;</p>
+            <p class="bubble-sub">Your community guide. Let's find what you need!</p>
+          </div>
+        </div>
+
+        <div class="floating-cards">
+          <div class="float-card card-1">
+            <div class="fc-icon">&#128187;</div>
+            <div class="fc-content">
+              <span class="fc-title">Laptop Repair</span>
+              <span class="fc-meta">Free &middot; Taguig City</span>
+            </div>
+            <span class="fc-badge offer">Offer</span>
+          </div>
+          <div class="float-card card-2">
+            <div class="fc-icon">&#128218;</div>
+            <div class="fc-content">
+              <span class="fc-title">Math Tutoring</span>
+              <span class="fc-meta">Negotiable &middot; Online</span>
+            </div>
+            <span class="fc-badge need">Need</span>
+          </div>
+          <div class="float-card card-3">
+            <div class="fc-icon">&#127912;</div>
+            <div class="fc-content">
+              <span class="fc-title">Logo Design</span>
+              <span class="fc-meta">Skill Exchange</span>
+            </div>
+            <span class="fc-badge exchange">Exchange</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EXPLORE (SAAS DIRECTORY TABLE) ===== -->
+  <section class="explore" id="explore">
+    <div class="section-container explore-container">
+      <div class="explore-header-row">
+        <div>
+          <span class="section-tag">Metro Manila Directory</span>
+          <h2 class="section-title">Community Listings</h2>
+          <p class="section-subtitle">Real-time services, skill exchanges, and requests across Metro Manila cities in a neat table</p>
+        </div>
+        <div class="explore-header-actions">
+          <button class="btn-pop-browse" id="btn-open-browse-modal" onclick="openBrowseModal()">
+            <span>&#128269; Pop-Out Browse Tab</span>
+            <span class="pill-badge" id="browse-btn-count">10 Listings</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Category Row Tabs -->
+      <div class="category-row-tabs" id="explore-cat-tabs" role="tablist" aria-label="Browse categories">
+        <button class="row-tab-pill active" data-cat="all" id="tab-all" onclick="filterCategory('all', this)">
+          &#127758; All Members <span class="pill-count" id="badge-cnt-all">10</span>
+        </button>
+        <button class="row-tab-pill" data-cat="services" id="tab-services" onclick="filterCategory('services', this)">
+          &#128187; Tech &amp; Services <span class="pill-count" id="badge-cnt-services">3</span>
+        </button>
+        <button class="row-tab-pill" data-cat="skills" id="tab-skills" onclick="filterCategory('skills', this)">
+          &#127891; Skills &amp; Tutoring <span class="pill-count" id="badge-cnt-skills">3</span>
+        </button>
+        <button class="row-tab-pill" data-cat="jobs" id="tab-jobs" onclick="filterCategory('jobs', this)">
+          &#128188; Jobs &amp; Opps <span class="pill-count" id="badge-cnt-jobs">1</span>
+        </button>
+        <button class="row-tab-pill" data-cat="donate" id="tab-donate" onclick="filterCategory('donate', this)">
+          &#127873; Donate / Free <span class="pill-count" id="badge-cnt-donate">2</span>
+        </button>
+        <button class="row-tab-pill" data-cat="volunteer" id="tab-volunteer" onclick="filterCategory('volunteer', this)">
+          &#128154; Volunteer <span class="pill-count" id="badge-cnt-volunteer">1</span>
+        </button>
+      </div>
+
+      <!-- SaaS Directory Table -->
+      <div class="saas-table-container">
+        <div class="saas-table-toolbar">
+          <div class="table-search-box">
+            <span class="search-lens">&#128269;</span>
+            <input type="text" id="explore-table-search" placeholder="Search members, skills, or Metro Manila city..." oninput="handleTableSearch(this.value, 'explore')" />
+          </div>
+          <div class="table-toolbar-right">
+            <div class="table-sort-wrap">
+              <label for="explore-city-select">City:</label>
+              <select id="explore-city-select" class="table-select-input" onchange="handleTableCity(this.value, 'explore')">
+                <option value="all">All Metro Manila</option>
+                <option value="Quezon City">Quezon City</option>
+                <option value="Manila">Manila</option>
+                <option value="Makati City">Makati City</option>
+                <option value="Taguig City">Taguig City</option>
+                <option value="Pasig City">Pasig City</option>
+                <option value="Mandaluyong">Mandaluyong</option>
+                <option value="Marikina">Marikina</option>
+                <option value="San Juan">San Juan</option>
+                <option value="Caloocan">Caloocan</option>
+              </select>
+            </div>
+            <div class="table-sort-wrap">
+              <label for="explore-sort-select">Sort by:</label>
+              <select id="explore-sort-select" class="table-select-input" onchange="handleTableSort(this.value, 'explore')">
+                <option value="date-desc">Latest Date &#9662;</option>
+                <option value="user-asc">Member Name (A-Z) &#9662;</option>
+                <option value="city-asc">City (A-Z) &#9662;</option>
+                <option value="type-asc">Status / Type &#9662;</option>
+              </select>
+            </div>
+            <div class="table-type-pills">
+              <button class="table-type-btn active" data-type="all" onclick="handleTableType('all', this, 'explore')">All</button>
+              <button class="table-type-btn" data-type="offer" onclick="handleTableType('offer', this, 'explore')">&#129309; Offers</button>
+              <button class="table-type-btn" data-type="need" onclick="handleTableType('need', this, 'explore')">&#128587; Needs</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-scroll-wrap">
+          <table class="saas-table">
+            <thead>
+              <tr>
+                <th class="th-user" onclick="handleColumnSort('user', 'explore')">Member Name <span class="sort-indicator" id="exp-sort-user">&#8597;</span></th>
+                <th class="th-city" onclick="handleColumnSort('city', 'explore')">City / Location <span class="sort-indicator" id="exp-sort-city">&#8597;</span></th>
+                <th class="th-title" onclick="handleColumnSort('title', 'explore')">Service / Skill <span class="sort-indicator" id="exp-sort-title">&#8597;</span></th>
+                <th class="th-cycle" onclick="handleColumnSort('type', 'explore')">Type <span class="sort-indicator" id="exp-sort-type">&#8597;</span></th>
+                <th class="th-status" onclick="handleColumnSort('status', 'explore')">Status <span class="sort-indicator" id="exp-sort-status">&#8597;</span></th>
+                <th class="th-date" onclick="handleColumnSort('date', 'explore')">Posted Date <span class="sort-indicator" id="exp-sort-date">&#8597;</span></th>
+                <th class="th-comp">Compensation</th>
+                <th class="th-dist">Distance</th>
+                <th class="th-actions text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="explore-table-body">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="explore-bottom-bar">
+        <span class="explore-stat" id="explore-stat-text">Showing 10 active listings</span>
+        <button class="btn-primary" onclick="openBrowseModal()">Open Full Browse Tab &#8599;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== LIVE MAP ===== -->
+  <section class="live-map-section" id="live-map">
+    <div class="map-section-inner">
+      <div class="map-section-head">
+        <div>
+          <span class="section-tag">Metro Manila</span>
+          <h2 class="section-title" style="margin-top:6px;">Live Service Map</h2>
+        </div>
+        <div class="map-controls" id="map-controls">
+          <button class="map-filter-btn active" data-type="all"       id="mf-all"       onclick="filterMap('all', this)">All</button>
+          <button class="map-filter-btn"        data-type="offer"     id="mf-offer"     onclick="filterMap('offer', this)">&#129309; Offers</button>
+          <button class="map-filter-btn"        data-type="need"      id="mf-need"      onclick="filterMap('need', this)">&#128587; Needs</button>
+          <button class="map-filter-btn"        data-type="services"  id="mf-services"  onclick="filterMap('services', this)">&#128187; Tech</button>
+          <button class="map-filter-btn"        data-type="skills"    id="mf-skills"    onclick="filterMap('skills', this)">&#127891; Skills</button>
+          <button class="map-filter-btn"        data-type="volunteer" id="mf-volunteer" onclick="filterMap('volunteer', this)">&#128154; Volunteer</button>
+          <button class="map-filter-btn"        data-type="donate"    id="mf-donate"    onclick="filterMap('donate', this)">&#127873; Donate</button>
+        </div>
+      </div>
+      <div class="map-wrapper">
+        <div id="kapwa-map"></div>
+        <div class="map-legend">
+          <div class="legend-title">Legend</div>
+          <div class="legend-item"><span class="legend-dot dot-offer"></span> Offer</div>
+          <div class="legend-item"><span class="legend-dot dot-need"></span> Need</div>
+          <div class="legend-item"><span class="legend-dot dot-volunteer"></span> Volunteer</div>
+          <div class="legend-item"><span class="legend-dot dot-donate"></span> Donate</div>
+        </div>
+        <div class="map-stats-bar">
+          <span>Showing <strong id="map-count">0</strong> listings</span>
+          <button class="map-reset-btn" id="map-reset-btn" onclick="resetMapView()">Reset View</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag">Simple &amp; Powerful</span>
+        <h2 class="section-title">How KAPWA Works</h2>
+        <p class="section-subtitle">Connect with your community in 3 easy steps.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card" id="step-ask">
+          <div class="step-num">01</div>
+          <div class="step-icon-wrap ask"><span>&#128587;</span></div>
+          <h3>Ask or Offer</h3>
+          <p>Post what you need — a skill, service, item, or opportunity. Or offer what you can give to help others.</p>
+        </div>
+        <div class="step-card" id="step-connect">
+          <div class="step-num">02</div>
+          <div class="step-icon-wrap connect"><span>&#129309;</span></div>
+          <h3>Connect</h3>
+          <p>Browse matches, read profiles, and connect directly with people who can help — or people you can help.</p>
+        </div>
+        <div class="step-card" id="step-grow">
+          <div class="step-num">03</div>
+          <div class="step-icon-wrap grow"><span>&#127807;</span></div>
+          <h3>Help &amp; Grow</h3>
+          <p>Exchange services, share skills, and build your community reputation. Every act of help makes the community stronger.</p>
+        </div>
+      </div>
+
+      <div class="flow-banner">
+        <div class="flow-item"><span class="flow-emoji">&#128587;</span><span>ASK</span></div>
+        <div class="flow-arrow">&#8594;</div>
+        <div class="flow-item"><span class="flow-emoji">&#128279;</span><span>CONNECT</span></div>
+        <div class="flow-arrow">&#8594;</div>
+        <div class="flow-item"><span class="flow-emoji">&#129309;</span><span>HELP</span></div>
+        <div class="flow-arrow">&#8594;</div>
+        <div class="flow-item"><span class="flow-emoji">&#128161;</span><span>OFFER</span></div>
+        <div class="flow-arrow">&#8594;</div>
+        <div class="flow-item"><span class="flow-emoji">&#127807;</span><span>GROW</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== COMMUNITY BOARD ===== -->
+  <section class="community-board" id="community">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag">Live Board</span>
+        <h2 class="section-title">Community Board</h2>
+        <p class="section-subtitle">See what your community is asking and offering right now.</p>
+      </div>
+
+      <div class="board-layout">
+        <div class="board-column">
+          <div class="board-col-header need-header">
+            <span class="col-icon">&#128587;</span>
+            <h3>Needs</h3>
+            <span class="col-count" id="needs-count">8 active</span>
+          </div>
+          <div class="board-cards" id="needs-board"></div>
+        </div>
+        <div class="board-column">
+          <div class="board-col-header offer-header">
+            <span class="col-icon">&#129309;</span>
+            <h3>Offers</h3>
+            <span class="col-count" id="offers-count">12 active</span>
+          </div>
+          <div class="board-cards" id="offers-board"></div>
+        </div>
+        <div class="board-column">
+          <div class="board-col-header opp-header">
+            <span class="col-icon">&#10024;</span>
+            <h3>Opportunities</h3>
+            <span class="col-count" id="opps-count">5 active</span>
+          </div>
+          <div class="board-cards" id="opps-board"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== OPPORTUNITIES ===== -->
+  <section class="opportunities" id="opportunities">
+    <div class="section-container">
+      <div class="opp-hero">
+        <div class="opp-text">
+          <span class="section-tag light">Opportunities</span>
+          <h2 class="section-title light">Find Your Next Step</h2>
+          <p class="section-subtitle light">Jobs, internships, scholarships, and volunteer work — all in one place, built for our community.</p>
+          <div class="opp-types">
+            <div class="opp-type" id="opp-jobs">
+              <span class="opp-icon">&#128188;</span>
+              <div><strong>Jobs</strong><span>Full-time &amp; Part-time</span></div>
+            </div>
+            <div class="opp-type" id="opp-intern">
+              <span class="opp-icon">&#127891;</span>
+              <div><strong>Internships</strong><span>Student opportunities</span></div>
+            </div>
+            <div class="opp-type" id="opp-volunteer">
+              <span class="opp-icon">&#128154;</span>
+              <div><strong>Volunteer</strong><span>Give back to community</span></div>
+            </div>
+            <div class="opp-type" id="opp-scholar">
+              <span class="opp-icon">&#128218;</span>
+              <div><strong>Scholarships</strong><span>Education funding</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="opp-cta-box">
+          <div class="opp-mascot-wrap">
+            <img src="assets/mascot.jpg" alt="Kap mascot" class="opp-mascot" />
+          </div>
+          <h3>Let Kap find opportunities for you</h3>
+          <p>Tell our AI assistant what you're looking for and get matched instantly.</p>
+          <button class="btn-gold" id="btn-find-opp" onclick="openChatbot()">Find Opportunities with Kap &#8594;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="testimonials" id="testimonials">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag">Stories</span>
+        <h2 class="section-title">From Our Community</h2>
+      </div>
+
+      <div class="testimonial-grid" id="testimonial-grid">
+        <div class="testimonial-card" id="testi-1">
+          <div class="testi-quote">&ldquo;</div>
+          <p>I was looking for a math tutor for my son and found someone right away! Free of charge and the community was incredibly helpful. People here genuinely care and look out for each other.</p>
+          <div class="testi-author">
+            <div class="testi-avatar" style="background: linear-gradient(135deg, #1B4FD8, #4A7FFF);">M</div>
+            <div>
+              <strong>Maria Santos</strong>
+              <span>Parent &middot; Quezon City</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card featured" id="testi-2">
+          <div class="testi-quote">&ldquo;</div>
+          <p>I offered my graphic design skills here and found three clients in one week. The community is so supportive — it doesn't feel transactional at all.</p>
+          <div class="testi-author">
+            <div class="testi-avatar" style="background: linear-gradient(135deg, #D8281B, #FF6B5B);">J</div>
+            <div>
+              <strong>Jake Reyes</strong>
+              <span>Freelance Designer &middot; Taguig City (BGC)</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card" id="testi-3">
+          <div class="testi-quote">&ldquo;</div>
+          <p>I donated my old books here and they went to students who really needed them. Seeing the impact made it so worth it. KAPWA is the future!</p>
+          <div class="testi-author">
+            <div class="testi-avatar" style="background: linear-gradient(135deg, #E8A91E, #F5C842);">A</div>
+            <div>
+              <strong>Ana Bautista</strong>
+              <span>Teacher &middot; Pasig City</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== JOIN CTA ===== -->
+  <section class="join-cta" id="join-cta">
+    <div class="section-container">
+      <div class="join-content">
+        <div class="join-mascot-group">
+          <img src="assets/mascot.jpg" alt="Kap inviting you to join" class="join-mascot" />
+          <div class="join-pulse"></div>
+        </div>
+        <div class="join-text">
+          <h2>Ready to join the KAPWA community?</h2>
+          <p>Whether you need help, can offer something, or just want to connect — there's a place for you here.</p>
+          <div class="join-actions">
+            <button class="btn-primary large" id="btn-join-hero" onclick="openAuthModal('signup')">Get Started — It's Free</button>
+            <button class="btn-ghost-light" id="btn-learn-more" onclick="openChatbot()">Chat with Kap first &#8594;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer" id="footer">
+    <div class="footer-container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="nav-logo footer-logo">
+            <div class="logo-icon small">
+              <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="20" fill="url(#footerLogoGrad)"/>
+                <path d="M12 20C12 20 14 14 20 14C26 14 28 20 28 20C28 20 26 26 20 26C14 26 12 20 12 20Z" fill="white" opacity="0.9"/>
+                <circle cx="20" cy="20" r="4" fill="url(#footerLogoGrad2)"/>
+                <defs>
+                  <linearGradient id="footerLogoGrad" x1="0" y1="0" x2="40" y2="40">
+                    <stop offset="0%" stop-color="#1B4FD8"/>
+                    <stop offset="100%" stop-color="#0B3BA8"/>
+                  </linearGradient>
+                  <linearGradient id="footerLogoGrad2" x1="0" y1="0" x2="20" y2="20">
+                    <stop offset="0%" stop-color="#F5C842"/>
+                    <stop offset="100%" stop-color="#E8A91E"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <span class="logo-text">KAPWA</span>
+          </div>
+          <p class="footer-tagline">Connecting people, building community — one act of help at a time.</p>
+          <div class="social-links">
+            <a href="#" class="social-link" id="social-fb" aria-label="Facebook">f</a>
+            <a href="#" class="social-link" id="social-ig" aria-label="Instagram">ig</a>
+            <a href="#" class="social-link" id="social-tw" aria-label="Twitter">X</a>
+          </div>
+        </div>
+
+        <div class="footer-links-group">
+          <div class="footer-col">
+            <h4>Platform</h4>
+            <a href="#explore">Explore Services</a>
+            <a href="#community">Community Board</a>
+            <a href="#opportunities">Opportunities</a>
+            <a href="#">Post a Request</a>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <a href="#">About KAPWA</a>
+            <a href="#">Our Mission</a>
+            <a href="#">Blog</a>
+            <a href="#">Press</a>
+          </div>
+          <div class="footer-col">
+            <h4>Support</h4>
+            <a href="#">Help Center</a>
+            <a href="#">Safety Guidelines</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Use</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&#169; 2026 KAPWA Platform. Dedicated to communities across Metro Manila, Philippines.</p>
+        <p class="footer-tagline-ph">We are one another — Building stronger communities together.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== CHATBOT FAB ===== -->
+  <div class="chatbot-fab" id="chatbot-fab" onclick="toggleChatbot()" title="Chat with Kap">
+    <img src="assets/mascot.jpg" alt="Chat with Kap" class="fab-mascot" id="fab-mascot-img" />
+    <div class="fab-pulse"></div>
+    <div class="fab-badge" id="fab-badge">1</div>
+  </div>
+
+  <!-- ===== CHATBOT PANEL ===== -->
+  <div class="chatbot-panel" id="chatbot-panel">
+    <div class="chat-header">
+      <div class="chat-agent-info">
+        <img src="assets/mascot.jpg" alt="Kap" class="chat-avatar" />
+        <div>
+          <strong>Kap</strong>
+          <span class="chat-status">&#9679; Online &mdash; Community Guide</span>
+        </div>
+      </div>
+      <button class="chat-close" id="chat-close-btn" onclick="toggleChatbot()" aria-label="Close chat">&#10005;</button>
+    </div>
+
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-msg bot" id="chat-greeting">
+        <img src="assets/mascot.jpg" alt="Kap" class="msg-avatar" />
+        <div class="msg-bubble">
+          <p>Hello! &#128075; I'm <strong>Kap</strong>, your KAPWA community guide!</p>
+          <p>I can help you find services, people who can help, or opportunities near you. What are you looking for today?</p>
+        </div>
+      </div>
+      <div class="quick-replies" id="quick-replies">
+        <button class="quick-reply" onclick="sendQuickReply('I need a service')">&#128587; I need a service</button>
+        <button class="quick-reply" onclick="sendQuickReply('I want to offer help')">&#129309; I want to offer help</button>
+        <button class="quick-reply" onclick="sendQuickReply('Looking for jobs')">&#128188; Looking for jobs</button>
+        <button class="quick-reply" onclick="sendQuickReply('How does KAPWA work?')">&#10067; How does KAPWA work?</button>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chat-input" placeholder="Ask Kap anything..." onkeydown="handleChatEnter(event)" />
+      <button class="chat-send" id="chat-send-btn" onclick="sendMessage()" aria-label="Send message">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== POST MODAL ===== -->
+  <div class="modal-overlay" id="post-modal" onclick="closePostModal(event)">
+    <div class="modal-box" id="post-modal-box">
+      <button class="modal-close" onclick="closePostModal(null, true)" aria-label="Close">&#10005;</button>
+      <div class="modal-header" id="modal-header-content">
+        <div class="modal-icon" id="modal-icon">&#128587;</div>
+        <h2 id="modal-title">I Need Something</h2>
+        <p id="modal-desc">Tell the community what you're looking for</p>
+      </div>
+      <form class="modal-form" id="post-form" onsubmit="submitPost(event)">
+        <div class="form-group">
+          <label for="post-category">Category</label>
+          <select id="post-category" class="form-select">
+            <option value="">Select a category...</option>
+            <option value="tech">Tech &amp; Repairs</option>
+            <option value="education">Education &amp; Tutoring</option>
+            <option value="design">Design &amp; Creative</option>
+            <option value="labor">Labor &amp; Manual Work</option>
+            <option value="health">Health &amp; Wellness</option>
+            <option value="transport">Transport &amp; Delivery</option>
+            <option value="donation">Donation / Free Items</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="post-title">Title</label>
+          <input type="text" id="post-title" class="form-input" placeholder="e.g., Need someone to fix my laptop" />
+        </div>
+        <div class="form-group">
+          <label for="post-description">Description</label>
+          <textarea id="post-description" class="form-textarea" placeholder="Describe what you need in detail..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="post-type">Type</label>
+            <select id="post-type" class="form-select">
+              <option value="free">Free</option>
+              <option value="paid">Paid</option>
+              <option value="negotiable">Negotiable</option>
+              <option value="exchange">Skill Exchange</option>
+              <option value="donation">Donation-based</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="post-location">Metro Manila City</label>
+            <select id="post-location" class="form-select">
+              <option value="">Select Metro Manila City...</option>
+              <option value="Quezon City">Quezon City</option>
+              <option value="Manila">City of Manila</option>
+              <option value="Makati City">Makati City</option>
+              <option value="Taguig City">Taguig City (BGC)</option>
+              <option value="Pasig City">Pasig City</option>
+              <option value="Mandaluyong">Mandaluyong</option>
+              <option value="Marikina">Marikina</option>
+              <option value="San Juan">San Juan</option>
+              <option value="Caloocan">Caloocan</option>
+              <option value="Parañaque">Parañaque</option>
+              <option value="Pasay">Pasay</option>
+              <option value="Las Piñas">Las Piñas</option>
+              <option value="Muntinlupa">Muntinlupa</option>
+              <option value="Malabon">Malabon</option>
+              <option value="Navotas">Navotas</option>
+              <option value="Valenzuela">Valenzuela</option>
+              <option value="Pateros">Pateros</option>
+              <option value="Online">Online / Remote (Metro Manila)</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary full" id="btn-post-submit">Post to Community</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== AUTH MODAL ===== -->
+  <div class="modal-overlay" id="auth-modal" onclick="closeAuthModal(event)">
+    <div class="modal-box auth-modal-box" id="auth-modal-box">
+      <button class="modal-close" onclick="closeAuthModal(null, true)" aria-label="Close">&#10005;</button>
+      <div class="auth-hero">
+        <img src="assets/mascot.jpg" alt="Kap welcoming you" class="auth-mascot" />
+        <h2 id="auth-title">Welcome to KAPWA!</h2>
+        <p id="auth-subtitle">Join thousands of Filipinos helping each other.</p>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-signup" onclick="switchAuthTab('signup')">Join Free</button>
+        <button class="auth-tab" id="tab-signin-btn" onclick="switchAuthTab('signin')">Sign In</button>
+      </div>
+      <form class="modal-form" id="auth-form" onsubmit="submitAuth(event)">
+        <div class="form-group" id="auth-name-group">
+          <label for="auth-name">Full Name</label>
+          <input type="text" id="auth-name" class="form-input" placeholder="Your full name" />
+        </div>
+        <div class="form-group">
+          <label for="auth-email">Email</label>
+          <input type="email" id="auth-email" class="form-input" placeholder="your@email.com" />
+        </div>
+        <div class="form-group">
+          <label for="auth-password">Password</label>
+          <input type="password" id="auth-password" class="form-input" placeholder="Create a password" />
+        </div>
+        <button type="submit" class="btn-primary full" id="btn-auth-submit">Create My Account</button>
+        <p class="auth-terms">By joining, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== BROWSE POP-OFF TAB MODAL (SAAS DIRECTORY TABLE) ===== -->
+  <div class="modal-overlay browse-modal-overlay" id="browse-modal" onclick="closeBrowseModal(event)">
+    <div class="browse-modal-window saas-table-modal" id="browse-modal-box">
+      <!-- Modal Header -->
+      <div class="browse-modal-header">
+        <div class="browse-header-left">
+          <div class="browse-badge-icon">&#128269;</div>
+          <div>
+            <h2 class="browse-modal-title">Community Directory</h2>
+            <p class="browse-modal-sub">Neat directory table with real-time community members, skills, and services</p>
+          </div>
+        </div>
+        <div class="browse-header-actions">
+          <span class="browse-total-pill" id="modal-total-pill">10 Available</span>
+          <button class="modal-close" onclick="closeBrowseModal(null, true)" aria-label="Close browse tab">&#10005;</button>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills Bar -->
+      <div class="browse-category-tabs-bar" id="modal-category-tabs" role="tablist">
+        <button class="cat-pill active" data-cat="all" onclick="filterBrowseCategory('all', this)">
+          &#127758; All Members <span class="cat-count" id="count-all">10</span>
+        </button>
+        <button class="cat-pill" data-cat="services" onclick="filterBrowseCategory('services', this)">
+          &#128187; Tech &amp; Services <span class="cat-count" id="count-services">3</span>
+        </button>
+        <button class="cat-pill" data-cat="skills" onclick="filterBrowseCategory('skills', this)">
+          &#127891; Skills &amp; Tutoring <span class="cat-count" id="count-skills">3</span>
+        </button>
+        <button class="cat-pill" data-cat="jobs" onclick="filterBrowseCategory('jobs', this)">
+          &#128188; Jobs &amp; Opps <span class="cat-count" id="count-jobs">1</span>
+        </button>
+        <button class="cat-pill" data-cat="donate" onclick="filterBrowseCategory('donate', this)">
+          &#127873; Donate / Free <span class="cat-count" id="count-donate">2</span>
+        </button>
+        <button class="cat-pill" data-cat="volunteer" onclick="filterBrowseCategory('volunteer', this)">
+          &#128154; Volunteer <span class="cat-count" id="count-volunteer">1</span>
+        </button>
+      </div>
+
+      <!-- SaaS Table Toolbar (like screenshot) -->
+      <div class="saas-table-toolbar modal-toolbar">
+        <div class="table-search-box">
+          <span class="search-lens">&#128269;</span>
+          <input type="text" id="browse-table-search" placeholder="Search members, skills, or Metro Manila city..." oninput="handleTableSearch(this.value, 'modal')" />
+          <button class="search-clear-btn" id="browse-table-clear" onclick="clearTableSearch('modal')" style="display:none;">&#10005;</button>
+        </div>
+        <div class="table-toolbar-right">
+          <div class="table-sort-wrap">
+            <label for="browse-city-select">City:</label>
+            <select id="browse-city-select" class="table-select-input" onchange="handleTableCity(this.value, 'modal')">
+              <option value="all">All Metro Manila</option>
+              <option value="Quezon City">Quezon City</option>
+              <option value="Manila">Manila</option>
+              <option value="Makati City">Makati City</option>
+              <option value="Taguig City">Taguig City</option>
+              <option value="Pasig City">Pasig City</option>
+              <option value="Mandaluyong">Mandaluyong</option>
+              <option value="Marikina">Marikina</option>
+              <option value="San Juan">San Juan</option>
+              <option value="Caloocan">Caloocan</option>
+            </select>
+          </div>
+          <div class="table-sort-wrap">
+            <label for="browse-sort-select">Sort by:</label>
+            <select id="browse-sort-select" class="table-select-input" onchange="handleTableSort(this.value, 'modal')">
+              <option value="date-desc">Latest Date &#9662;</option>
+              <option value="user-asc">Member Name (A-Z) &#9662;</option>
+              <option value="city-asc">City (A-Z) &#9662;</option>
+              <option value="type-asc">Status / Type &#9662;</option>
+            </select>
+          </div>
+          <div class="table-type-pills">
+            <button class="table-type-btn active" data-type="all" onclick="handleTableType('all', this, 'modal')">All</button>
+            <button class="table-type-btn" data-type="offer" onclick="handleTableType('offer', this, 'modal')">&#129309; Offers</button>
+            <button class="table-type-btn" data-type="need" onclick="handleTableType('need', this, 'modal')">&#128587; Needs</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SaaS Table Body -->
+      <div class="table-scroll-wrap modal-table-scroll">
+        <table class="saas-table">
+          <thead>
+            <tr>
+              <th class="th-user" onclick="handleColumnSort('user', 'modal')">Member Name <span class="sort-indicator" id="modal-sort-user">&#8597;</span></th>
+              <th class="th-city" onclick="handleColumnSort('city', 'modal')">City / Location <span class="sort-indicator" id="modal-sort-city">&#8597;</span></th>
+              <th class="th-title" onclick="handleColumnSort('title', 'modal')">Service / Skill <span class="sort-indicator" id="modal-sort-title">&#8597;</span></th>
+              <th class="th-cycle" onclick="handleColumnSort('type', 'modal')">Type <span class="sort-indicator" id="modal-sort-type">&#8597;</span></th>
+              <th class="th-status" onclick="handleColumnSort('status', 'modal')">Status <span class="sort-indicator" id="modal-sort-status">&#8597;</span></th>
+              <th class="th-date" onclick="handleColumnSort('date', 'modal')">Posted Date <span class="sort-indicator" id="modal-sort-date">&#8597;</span></th>
+              <th class="th-comp">Compensation</th>
+              <th class="th-dist">Distance</th>
+              <th class="th-actions text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="browse-table-body">
+            <!-- Dynamically populated rows -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="browse-modal-footer">
+        <div class="browse-footer-info">
+          <span id="browse-summary-text">Showing 10 of 10 community listings</span>
+        </div>
+        <div class="browse-footer-actions">
+          <button class="btn-ghost-sm" onclick="closeBrowseModal(null, true); openPostModal('need');">&#128587; Post a Need</button>
+          <button class="btn-primary-sm" onclick="closeBrowseModal(null, true); openPostModal('offer');">&#129309; Post an Offer</button>
+        </div>
+      </div>
+
+      <!-- Floating "New Message" Dialog (from screenshot) -->
+      <div class="saas-floating-msg-dialog" id="saas-floating-msg" style="display:none;">
+        <div class="msg-dialog-header">
+          <div class="msg-dialog-title">
+            <span class="msg-title-text">New Message</span>
+            <span class="msg-title-sub">Direct Community Message</span>
+          </div>
+          <button class="msg-dialog-close" onclick="closeFloatingMessage()" aria-label="Close message window">&times;</button>
+        </div>
+        <div class="msg-dialog-body">
+          <div class="msg-field-group">
+            <label class="msg-label">Recipient *</label>
+            <div class="msg-recipient-input-wrap">
+              <span class="recipient-tag" id="msg-recipient-tag">
+                <span class="recipient-avatar" id="msg-recipient-avatar">C</span>
+                <span class="recipient-email" id="msg-recipient-email">colleen.howard@gmail.com</span>
+              </span>
+              <input type="text" class="msg-recipient-search" id="msg-recipient-input" placeholder="Type member name..." oninput="handleRecipientSearch(this.value)" />
+              <div class="recipient-autocomplete" id="recipient-autocomplete" style="display:none;"></div>
+            </div>
+          </div>
+          <div class="msg-field-group">
+            <label class="msg-label">Subject *</label>
+            <input type="text" class="msg-input" id="msg-subject-input" placeholder="Regarding: Logo &amp; Graphic Design" />
+          </div>
+          <div class="msg-field-group">
+            <label class="msg-label">Your Message *</label>
+            <textarea class="msg-textarea" id="msg-content-input" rows="4" placeholder="Hello,&#10;&#10;I'd like to get in touch regarding your listing..."></textarea>
+          </div>
+          <div class="msg-checkbox-row">
+            <label class="msg-checkbox-label">
+              <input type="checkbox" id="msg-sms-check" checked />
+              <span>Send instant SMS / Messenger notification</span>
+            </label>
+          </div>
+        </div>
+        <div class="msg-dialog-footer">
+          <button class="btn-ghost-sm" onclick="closeFloatingMessage()">Cancel</button>
+          <button class="btn-send-msg" onclick="sendFloatingMessage()">
+            <span>Send Message</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Hover Member Popover Card -->
+      <div class="member-hover-popover" id="member-hover-popover" style="display:none;">
+        <div class="popover-profile">
+          <div class="popover-avatar" id="pop-avatar">C</div>
+          <div class="popover-info">
+            <div class="popover-name" id="pop-name">Colleen Howard</div>
+            <div class="popover-email" id="pop-email">colleen.howard@kapwa.ph</div>
+            <div class="popover-phone" id="pop-phone">+63 917 842 1923</div>
+          </div>
+        </div>
+        <div class="popover-actions">
+          <button class="btn-popover-open" onclick="openProfileFromPopover()">Open profile in a new window</button>
+          <div class="popover-icon-btns">
+            <button class="btn-pop-icon" title="Send email / message" onclick="triggerMessageFromPopover()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </button>
+            <button class="btn-pop-icon" title="View details" onclick="triggerChatFromPopover()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
